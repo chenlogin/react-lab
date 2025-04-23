@@ -7,13 +7,33 @@ npm install
 npm run dev
 ```
 
+### 安装 Ant Design
+```
+npm install antd
+npm install @ant-design/v5-patch-for-react-19
+
+// Import the compatibility package at the application entry
+// antd 5 兼容 React 19
+import '@ant-design/v5-patch-for-react-19';
+```
+
+### react-router-dom（[查看路由配置](./ROUTER.md)）
+```
+<BrowserRouter>
+  ├─ Layout
+  │    ├─ Header
+  │    ├─ Layout
+  │    │    ├─ Sider (包含 SiderContent)
+  │    │    └─ Content (包含 IndexRouter)
+  │    └─ Footer
+  └─
+```
+
+
 ### Demo
 1、创建和嵌套组件
 2、组件间共享数据
 3、react-router
-4、ant-design
-
-
 
 
 
