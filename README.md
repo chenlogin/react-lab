@@ -30,10 +30,9 @@ import '@ant-design/v5-patch-for-react-19';
 ```
 
 
-### Demo
-1、创建和嵌套组件
-2、组件间共享数据
-3、react-router
+### React
+https://zh-hans.react.dev/learn
+
 
 
 
@@ -259,11 +258,8 @@ Reducer 帮助你合并组件的状态更新逻辑。Context 帮助你将信息�
 
 
 
-https://zh-hans.react.dev/learn/typescript
+router（reducer, context）
 
-1、文档
-2、router（reducer, context）
-3、ant-design
 
 
 
