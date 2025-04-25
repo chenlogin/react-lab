@@ -633,6 +633,144 @@ function Task({ task }) {
 }
 ```
 ## useRef
-- useRef 函数组件中存储一个可变值，并且不会导致组件重新渲染
+- useRef 函数组件中存储一个可变值，并且不会导致组件重新渲染，ref 是一种“脱围机制”
+- 组件不会在每次递增时重新渲染。 与 state 一样，React 会在每次重新渲染之间保留 ref。但是，设置 state 会重新渲染组件，更改 ref 不会！
+
 ```
-import { useRef } from'react';
+import { useRef } from 'react';
+
+export default function Counter() {
+  let ref = useRef(0);
+
+  function handleClick() {
+    ref.current = ref.current + 1;
+    alert('你点击了 ' + ref.current + ' 次！');
+  }
+
+  return (
+    <button onClick={handleClick}>
+      点击我！
+    </button>
+  );
+}
+```
+- 你可以将 ref 指向任何值。但是，ref 最常见的用法是访问 DOM 元素，当你将 ref 传递给 JSX 中的 ref 属性时，比如 < div ref={myRef}>，React 会将相应的 DOM 元素放入 myRef.current 中
+- 由于 React 会自动处理更新 DOM 以匹配你的渲染输出，因此你在组件中通常不需要操作 DOM。但是，有时你可能需要访问由 React 管理的 DOM 元素 —— 例如，让一个节点获得焦点、滚动到它或测量它的尺寸和位置。在 React 中没有内置的方法来做这些事情，所以你需要一个指向 DOM 节点的 ref 来实现
+```
+import { useRef } from 'react';
+
+export default function Form() {
+  const inputRef = useRef(null);
+
+  function handleClick() {
+    inputRef.current.focus();
+  }
+
+  return (
+    <>
+      <input ref={inputRef} />
+      <button onClick={handleClick}>
+        聚焦输入框
+      </button>
+    </>
+  );
+}
+```
+## useEffect
+Effect 允许你在渲染结束后执行一些代码，以便将组件与 React 外部的某个系统相同步。
+```
+useEffect(() => {
+  // 这里的代码会在每次渲染后运行
+});
+
+useEffect(() => {
+  // 这里的代码只会在组件挂载（首次出现）时运行
+}, []);
+
+useEffect(() => {
+  // 这里的代码不但会在组件挂载时运行，而且当 a 或 b 的值自上次渲染后发生变化后也会运行
+}, [a, b]);
+```
+React 会在每次 Effect 重新运行之前调用清理函数，并在组件卸载（被移除）时最后一次调用清理函数
+```
+useEffect(() => {
+  const connection = createConnection();
+  connection.connect();
+  return () => {
+    connection.disconnect();
+  };
+}, []);
+```
+## 自定义hook
+自定义 Hook 是一个函数，其名称以 use 开头，函数内部可以访问 React 提供的 Hook，包括 useState、useEffect、useContext 等。
+```
+//同步网络状态
+import { useState, useEffect } from 'react';
+
+export default function StatusBar() {
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    function handleOnline() {
+      setIsOnline(true);
+    }
+    function handleOffline() {
+      setIsOnline(false);
+    }
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  return <h1>{isOnline ? '✅ Online' : '❌ Disconnected'}</h1>;
+}
+```
+创建自定义hook，自定义 Hook 共享的是状态逻辑，而不是状态本身。对 Hook 的每个调用完全独立于对同一个 Hook 的其他调用
+```
+//useOnlineStatus.js
+import { useState, useEffect } from 'react';
+function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    function handleOnline() {
+      setIsOnline(true);
+    }
+    function handleOffline() {
+      setIsOnline(false);
+    }
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  return isOnline;
+}
+
+// app.js
+import useOnlineStatus from './useOnlineStatus.js';
+
+function SaveButton() {
+  const isOnline = useOnlineStatus();
+
+  function handleSaveClick() {
+    console.log('✅ Progress saved');
+  }
+
+  return (
+    <button disabled={!isOnline} onClick={handleSaveClick}>
+      {isOnline ? 'Save progress' : 'Reconnecting...'}
+    </button>
+  );
+}
+export default function App() {
+  return (
+    <>
+      <SaveButton />
+    </>
+  );
+}
+```

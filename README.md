@@ -126,13 +126,10 @@ function Avatar(props) {
 ```
 
 ### Hooks（[详情](./documents/HOOKS.md)）
+https://zh-hans.react.dev/reference/react/hooks
 - useState Hook 为组件添加状态；
 - useContext Hook 为组件提供上下文；
 - useReducer Hook 为组件提供状态管理；
 - useRef Hook 为组件提供引用；
 - useEffect Hook 为组件添加生命周期方法；
-- useCallback Hook 为组件提供缓存函数；
-- useMemo Hook 为组件提供缓存计算结果；
-
-
 
